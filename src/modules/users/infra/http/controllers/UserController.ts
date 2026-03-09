@@ -18,7 +18,7 @@ export default class UserController {
     }
 
     public async search(request: Request, response: Response) {
-        const { id } = request.params;
+        const id = request.params.id as string;
         const searchUserService = container.resolve(SearchUserService);
         const user = await searchUserService.search(id);
 
@@ -41,6 +41,10 @@ export default class UserController {
             UpdateAvatarUserService,
         );
 
+        if (!request.file) {
+            return response.status(400).json({ error: 'File is required.' });
+        }
+
         const users = await updateAvatarUserService.execute({
             user_id: request.user.id,
             avatarFileName: request.file.filename,
@@ -49,7 +53,7 @@ export default class UserController {
     }
 
     public async delete(request: Request, response: Response) {
-        const { id } = request.params;
+        const id = request.params.id as string;
         const deleteUserService = container.resolve(DeleteUserService);
         const deleted = await deleteUserService.delete(id);
 

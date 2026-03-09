@@ -14,7 +14,7 @@ const app = express();
 const PORT = 3333;
 
 app.use(express.json());
-app.use('/files', express.static(uploadConfig.directory));
+app.use('/files', express.static(uploadConfig.uploadsFolder));
 app.use(cors());
 app.use(routes);
 

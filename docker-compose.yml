@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: gobarber_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASS:-docker}
+      POSTGRES_DB: ${DB_NAME:-gostack_gobarber}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - gobarber_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: gobarber_api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3333
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASS: ${DB_PASS:-docker}
+      DB_NAME: ${DB_NAME:-gostack_gobarber}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1d}
+    volumes:
+      - uploads:/app/tmp/uploads
+    networks:
+      - gobarber_net
+    expose:
+      - "3333"
+
+  nginx:
+    image: nginx:alpine
+    container_name: gobarber_nginx
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /var/www/certbot:/var/www/certbot:ro
+    networks:
+      - gobarber_net
+
+volumes:
+  pgdata:
+  uploads:
+
+networks:
+  gobarber_net:
+    driver: bridge

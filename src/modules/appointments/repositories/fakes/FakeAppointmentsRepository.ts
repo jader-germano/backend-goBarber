@@ -2,7 +2,7 @@ import ICreateAppointmentDTO from '@modules/appointments/dtos/ICreateAppointment
 import IAppointmentsRepository from '@modules/appointments/repositories/IAppointmentsRepository';
 import Appointment from '@modules/appointments/infra/typeorm/entities/Appointment';
 import { isEqual } from 'date-fns';
-import { uuid } from 'uuidv4';
+import { v4 as uuid } from 'uuid';
 
 class FakeAppointmentsRepository implements IAppointmentsRepository {
     private appointments: Appointment[] = [];

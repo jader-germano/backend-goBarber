@@ -12,7 +12,7 @@ interface IRequest {
 }
 
 export interface IResponse {
-    user: User;
+    user: Omit<User, 'password'>;
     token: string;
 }
 
@@ -24,8 +24,6 @@ class AuthenticateUserService {
 
         @inject('HashProvider')
         private hashProvider: IHashProvider,
-
-
     ) {}
 
     public async execute({ email, password }: IRequest): Promise<IResponse> {
@@ -40,16 +38,16 @@ class AuthenticateUserService {
             throw new AppError('Incorrect email/password combination', 401);
         }
 
-        delete user.password;
-
         const { secret, expiresIn } = authConfig.jwt;
         const token = sign({}, secret, {
             subject: user.id,
             expiresIn,
         });
 
+        const { password: _password, ...userWithoutPassword } = user;
+
         return {
-            user,
+            user: userWithoutPassword as Omit<User, 'password'>,
             token,
         };
     }

@@ -1,6 +1,17 @@
-export default {
+import { SignOptions } from 'jsonwebtoken';
+
+interface IAuthConfig {
     jwt: {
-        secret: 'e64a6ceddde973c66de24ca8b90c1127',
-        expiresIn: '1d',
+        secret: string;
+        expiresIn: SignOptions['expiresIn'];
+    };
+}
+
+const authConfig: IAuthConfig = {
+    jwt: {
+        secret: process.env.JWT_SECRET || 'gobarber_default_secret_change_in_prod',
+        expiresIn: (process.env.JWT_EXPIRES_IN || '1d') as SignOptions['expiresIn'],
     },
 };
+
+export default authConfig;
