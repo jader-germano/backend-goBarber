@@ -11,22 +11,22 @@ describe('AuthenticateUser', () => {
 
         const createUser = new CreateUserService(
             fakeUsersRepository,
-            fakeHashProvider
+            fakeHashProvider,
         );
         const authenticateUser = new AuthenticateUserService(
             fakeUsersRepository,
-            fakeHashProvider
+            fakeHashProvider,
         );
 
         const user = await createUser.execute({
             name: 'John Doe',
             email: 'johndoe@example.com',
-            password: '12345'
+            password: '12345',
         });
 
         const response = await authenticateUser.execute({
             email: 'johndoe@example.com',
-            password: '12345'
+            password: '12345',
         });
 
         expect(response).toHaveProperty('token');
@@ -39,13 +39,15 @@ describe('AuthenticateUser', () => {
 
         const authenticateUser = new AuthenticateUserService(
             fakeUsersRepository,
-            fakeHashProvider
+            fakeHashProvider,
         );
 
-        expect(authenticateUser.execute({
-            email: 'johndoe@example.com',
-            password: '12345'
-        })).rejects.toBeInstanceOf(AppError);
+        await expect(
+            authenticateUser.execute({
+                email: 'johndoe@example.com',
+                password: '12345',
+            }),
+        ).rejects.toBeInstanceOf(AppError);
     });
 
     it('should not be able to authenticate with wrong password', async () => {
@@ -54,22 +56,18 @@ describe('AuthenticateUser', () => {
 
         const createUser = new CreateUserService(
             fakeUsersRepository,
-            fakeHashProvider
+            fakeHashProvider,
         );
         const authenticateUser = new AuthenticateUserService(
             fakeUsersRepository,
-            fakeHashProvider
+            fakeHashProvider,
         );
 
-        const user = await createUser.execute({
-            name: 'John Doe',
-            email: 'johndoe@example.com',
-            password: '12345'
-        });
-
-        expect(authenticateUser.execute({
-            email: 'johndoe@example.com',
-            password: 'wrong-password'
-        })).rejects.toBeInstanceOf(AppError);
+        await expect(
+            authenticateUser.execute({
+                email: 'johndoe@example.com',
+                password: 'wrong-password',
+            }),
+        ).rejects.toBeInstanceOf(AppError);
     });
 });
