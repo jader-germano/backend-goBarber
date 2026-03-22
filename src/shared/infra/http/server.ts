@@ -3,7 +3,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import 'express-async-errors';
 
-import uploadConfig from '@config/upload';
+import uploadConfig from '@config/upload.ts';
 import AppError from '@shared/errors/AppError';
 import routes from '@shared/infra/http/routes/routes';
 import '@shared/infra/typeorm';
@@ -14,7 +14,7 @@ const app = express();
 const PORT = 3333;
 
 app.use(express.json());
-app.use('/files', express.static(uploadConfig.directory));
+app.use('/files', express.static(uploadConfig.uploadsFolder));
 app.use(cors());
 app.use(routes);
 

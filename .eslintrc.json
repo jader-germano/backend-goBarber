@@ -41,7 +41,8 @@
             }
         ],
         "no-useless-constructor": "off"
-        /* "interface-name-prefix": [
+         /*,
+         "interface-name-prefix": [
              "error",
              {
                  "prefixWithI": "always"
